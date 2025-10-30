@@ -1,14 +1,16 @@
-Command:
-
 # Retrieve all Book records
 Book.objects.all()
 
-
-Expected Output:
-
+# Expected Output:
 <QuerySet [<Book: Title: 1984, Author: George Orwell, Publication date: 1949>]>
 
+# Retrieve a specific Book record
+Book.objects.get(title=1984)
 
-Explanation:
-This shows the current book records stored in the database.
-Here, the 1984 book by George Orwell is successfully retrieved.
+# Expected Output:
+<Book: Title: 1984, Author: George Orwell, Publication date: 1949>
+
+# Explanation:
+- The first command retrieves all the book records from the database.
+- The second command retrieves the specific book with the title 1984.
+
