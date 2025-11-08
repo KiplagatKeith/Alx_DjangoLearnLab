@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpRequest
 from .models import Library,  Book
-from django.views.generic import DetailView
+from django.views.generic.detail import DetailView
 
 def all_books_view(request):
     books = Book.objects.all()
