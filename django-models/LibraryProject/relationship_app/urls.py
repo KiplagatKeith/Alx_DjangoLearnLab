@@ -1,5 +1,5 @@
 from django.urls import path
-from relationship_app.views import all_books_view, LibraryDetailView
+from .views import all_books_view, LibraryDetailView
 
 urlpatterns = [
     # Function-based view: list all books
