@@ -31,8 +31,8 @@ def register(request):
             form.save()
             return redirect('login')
     else:
-        form = UserCreationForm()  # <-- This line is required exactly
-
+        form = UserCreationForm()  
+        
     return render(request, 'relationship_app/register.html', {'form': form})
 
 @permission_required('relationship_app.can_add_book')
