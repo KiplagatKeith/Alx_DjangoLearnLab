@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import permission_required
 from .models import Book
 from django import forms
 from django.db.models import Q
-
+from .forms import ExampleForm
 @permission_required('bookshelf.can_create', raise_exception=True)
 def book_search(request):
     query = request.GET.get('q', '')  # Get user input from query string
