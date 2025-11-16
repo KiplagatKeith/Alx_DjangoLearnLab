@@ -30,6 +30,13 @@ SECURE_BROWSER_XSS_FILTER = True    #Activates browser-level XSS protection
 SECURE_CONTENT_TYPE_NOSNIFF = True  #Prevents the browser from MIME-sniffing a response away from the declared content-type
 X_FRAME_OPTIONS = 'DENY'    #Prevents the site from being framed to protect against clickjacking
 
+# ------------------------
+# HTTP Strict Transport Security (HSTS)
+# ------------------------
+SECURE_HSTS_SECONDS = 31536000  # Instructs browsers to use HTTPS for 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Apply HSTS to all subdomains
+SECURE_HSTS_PRELOAD = True  # Allow the site to be included in browser preload lists
+
 
 CSRF_COOKIE_SECURE = False   #Ensures CSRF cookies are only sent over HTTPS, Set to True only after enabling HTTPS
 SESSION_COOKIE_SECURE = False    #Ensures session cookies are only sent over HTTPS
