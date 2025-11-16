@@ -23,9 +23,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$8x02b19)f1spbb_yqvls4fom_k07@x4&nj@#onllc1c^mn6)7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False   #Django refuses to serve unless a valid host is provided.
 
-ALLOWED_HOSTS = []
+# Security Headers
+SECURE_BROWSER_XSS_FILTER = True    #Activates browser-level XSS protection
+SECURE_CONTENT_TYPE_NOSNIFF = True  #Prevents the browser from MIME-sniffing a response away from the declared content-type
+X_FRAME_OPTIONS = 'DENY'    #Prevents the site from being framed to protect against clickjacking
+
+
+CSRF_COOKIE_SECURE = False   #Ensures CSRF cookies are only sent over HTTPS, Set to True only after enabling HTTPS
+SESSION_COOKIE_SECURE = False    #Ensures session cookies are only sent over HTTPS
+
+# Remove SSL redirect during development (otherwise localhost breaks)
+SECURE_SSL_REDIRECT = False  #Redirects all non-HTTPS requests to HTTPS when True
+
+# When DEBUG=False you MUST set allowed hosts
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]  #Hosts/domain names that are valid for this site
+# In production: ALLOWED_HOSTS = ["your-domain.com"]
 
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
@@ -40,19 +54,35 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bookshelf',
     'relationship_app',
+    'csp',
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',    #Security middleware should be at the top
+    'django.contrib.sessions.middleware.SessionMiddleware', #Manages sessions across requests
+    'django.middleware.common.CommonMiddleware',    #Provides various common functionalities
+    'django.middleware.csrf.CsrfViewMiddleware',    #Protects against Cross-Site Request Forgery attacks
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  #Associates users with requests using sessions
+    'django.contrib.messages.middleware.MessageMiddleware', #Enables cookie- and session-based message support
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',   #Prevents clickjacking by setting X-Frame-Options header
+    'csp.middleware.CSPMiddleware',  #Content Security Policy middleware
 ]
 
-ROOT_URLCONF = 'LibraryProject.urls'
+# ------------------------
+# Content Security Policy
+# ------------------------
+
+CSP_DEFAULT_SRC = ("'self'",)   #Default policy for loading content
+CSP_SCRIPT_SRC = ("'self'",)    #Allowed sources for JavaScript
+CSP_STYLE_SRC = ("'self'", "https://fonts.googleapis.com")  #Allowed sources for CSS
+CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")  #Allowed sources for fonts
+CSP_IMG_SRC = ("'self'", "data:")   #Allowed sources for images 
+CSP_CONNECT_SRC = ("'self'",)    # Prevent outside JS connections
+CSP_FRAME_SRC = ("'none'",)      # Block iframes completely
+CSP_OBJECT_SRC = ("'none'",)     # Prevent Flash/plugins
+
+
+ROOT_URLCONF = 'LibraryProject.urls'    #Root URL configuration module
 
 TEMPLATES = [
     {
@@ -61,6 +91,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -122,7 +153,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATICFILES_DIRS = [BASE_DIR / "static"]   # look for static/ in project root
+STATIC_ROOT = BASE_DIR / "staticfiles"   # REQUIRED when DEBUG=False
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

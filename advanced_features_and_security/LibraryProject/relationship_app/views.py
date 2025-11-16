@@ -1,16 +1,14 @@
 from django.shortcuts import render, redirect
 from .models import Library, Book
 from django.views.generic.detail import DetailView
-
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse
-
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
+from django import forms
 
 def list_books(request):
     books = Book.objects.all()
@@ -24,6 +22,9 @@ class LibraryDetailView(DetailView):
 
 
 def register(request):
+    # Validate user input using Django's built-in UserCreationForm 
+    # to avoid insecure manual handling of passwords or unsanitized input.
+
     if request.user.is_authenticated:
         return redirect('all_books')
 
@@ -40,6 +41,7 @@ def register(request):
 
 @permission_required('relationship_app.can_add_book')
 def add_book(request):
+    # Only users with the 'can_add_book' permission can access this.
     return HttpResponse("You are allowed to add books.")
 
 
@@ -79,3 +81,20 @@ def librarian_view(request):
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, 'relationship_app/member_view.html')
+
+class BookSearchForm(forms.Form):
+    query = forms.CharField(required=False, max_length=100)
+
+def list_books(request):
+    form = BookSearchForm(request.GET)
+    books = Book.objects.all()
+
+    if form.is_valid():
+        query = form.cleaned_data.get("query")
+        if query:
+            books = books.filter(title__icontains=query)
+
+    return render(request, 'relationship_app/list_books.html', {
+        'books': books,
+        'form': form
+    })
