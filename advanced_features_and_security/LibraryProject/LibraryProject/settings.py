@@ -44,6 +44,8 @@ SESSION_COOKIE_SECURE = False    #Ensures session cookies are only sent over HTT
 # Remove SSL redirect during development (otherwise localhost breaks)
 SECURE_SSL_REDIRECT = False  #Redirects all non-HTTPS requests to HTTPS when True
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # When DEBUG=False you MUST set allowed hosts
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]  #Hosts/domain names that are valid for this site
 # In production: ALLOWED_HOSTS = ["your-domain.com"]
