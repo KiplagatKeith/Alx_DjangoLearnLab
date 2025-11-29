@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics
-from serializers import BookSerializer, AuthorSerializer
+from .serializers import BookSerializer, AuthorSerializer
 from .models import Book
 from rest_framework import permissions
 from rest_framework import filters
@@ -31,8 +31,7 @@ class BookUpdateView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]  # only logged-in users
 
     def perform_update(self, serializer):
-        # Example: only allow the owner to update the book
-        if serializer.instance.owner != self.request.user:
+        if serializer.instance.author.user != self.request.user:
             raise PermissionError("You cannot edit this book.")
         serializer.save()
 class BookDeleteView(generics.DestroyAPIView):
@@ -45,8 +44,7 @@ class BookDeleteView(generics.DestroyAPIView):
     lookup_field = 'id'
 
     def perform_destroy(self, instance):
-        # Example: only allow the owner to delete the book
-        if instance.owner != self.request.user:
+        if instance.author.user != self.request.user:
             raise PermissionError("You cannot delete this book.")
         instance.delete()
 
@@ -59,6 +57,6 @@ class BookCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]  # only logged-in users can create
 
     def perform_create(self, serializer):
-        # Add extra logic before saving
-        # For example, assign the book to the currently logged-in user
-        serializer.save(owner=self.request.user)
+        # automatically set the author as the logged-in user
+        author = Author.objects.get(user=self.request.user)
+        serializer.save(author=author)

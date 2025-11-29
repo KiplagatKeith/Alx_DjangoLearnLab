@@ -3,6 +3,7 @@ from django.db import models
 # Model to store author details
 class Author(models.Model):
     name = models.CharField(max_length=100)
+    user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
     
     def __str__(self):
         return self.name
