@@ -6,7 +6,12 @@ from rest_framework import permissions
 from rest_framework import filters
 class BookListView(generics.ListAPIView):
     """
-    API view to retrieve a list of books.
+    GET /api/books/
+
+    Returns a list of all books in the database.
+    Features:
+    - Supports search by book title or author name using query param ?search=<query>.
+    - No authentication required to view the list.
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
@@ -15,7 +20,11 @@ class BookListView(generics.ListAPIView):
 
 class BookDetailView(generics.RetrieveAPIView):
     """
-    API view to retrieve details of a specific book by its ID.
+    GET /api/books/<id>/
+
+    Retrieves details of a single book by its ID.
+    - Publicly accessible (no login required).
+    - Returns 404 if the book ID does not exist.
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
@@ -23,8 +32,14 @@ class BookDetailView(generics.RetrieveAPIView):
 
 class BookUpdateView(generics.UpdateAPIView):
     """
-    API view to update details of a specific book by its ID.
+    PUT/PATCH /api/books/<id>/update/
+
+    Allows the author of a book (linked to logged-in user) to update book details.
+    Custom Behavior:
+    - Checks ownership: only the author can update.
+    - Returns PermissionError if user is not the owner.
     """
+
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     lookup_field = 'id'
@@ -36,8 +51,14 @@ class BookUpdateView(generics.UpdateAPIView):
         serializer.save()
 class BookDeleteView(generics.DestroyAPIView):
     """
-    API view to delete a specific book by its ID.
+    DELETE /api/books/<id>/delete/
+
+    Allows the author of a book to delete it.
+    Custom Behavior:
+    - Ownership check: only the author can delete.
+    - Returns PermissionError if user is not the owner.
     """
+    
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [permissions.IsAuthenticated]  # only logged-in users
@@ -50,7 +71,12 @@ class BookDeleteView(generics.DestroyAPIView):
 
 class BookCreateView(generics.CreateAPIView):
     """
-    API view to create a new book.
+    POST /api/books/create/
+
+    Allows authenticated users to create a new book.
+    Custom Behavior:
+    - Automatically assigns the logged-in user as the book's author.
+    - Requires authentication (403 Forbidden if not logged in).
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer

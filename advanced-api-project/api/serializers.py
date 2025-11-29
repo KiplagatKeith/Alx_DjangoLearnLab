@@ -3,6 +3,11 @@ from .models import Book, Author
 
 # Serializer for Book model
 class BookSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Book model.
+    - Represents the book's title, author (as string), and publication year.
+    """
+
     author = serializers.StringRelatedField()
 
     def validate_publication_year(self, value):
@@ -15,6 +20,12 @@ class BookSerializer(serializers.ModelSerializer):
 
 # Serializer for Author model with nested books
 class AuthorSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Author model.
+    - Includes a nested list of books associated with the author.
+    - 'books' uses BookSerializer for read-only representation.
+    """
+    
     books = BookSerializer(many=True, read_only=True)  # use the class name directly
 
     class Meta:
