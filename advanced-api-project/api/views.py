@@ -5,6 +5,8 @@ from .models import Book, Author
 from rest_framework import permissions
 from rest_framework import filters
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 class BookListView(generics.ListAPIView):
     """
     GET /api/books/
@@ -14,10 +16,25 @@ class BookListView(generics.ListAPIView):
     - Supports search by book title or author name using query param ?search=<query>.
     - No authentication required to view the list.
     """
+
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+
+    filter_backends = [
+        DjangoFilterBackend, 
+        filters.SearchFilter, 
+        filters.OrderingFilter
+    ]
+
+    filterset_fields = ['title', 'author__name', 'publication_year']
+    # searching
+    search_fields = ['title', 'author__name']
+    # ordering
+    ordering_fields = ['title', 'publication_year']
+    ordering = ['title']  # default
+
     filter_backends = [filters.SearchFilter]  # add filter backends as needed
-    search_fields = ['title', 'author']  # example search fields
+    search_fields = ['title', 'author_name']  # example search fields
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 class BookDetailView(generics.RetrieveAPIView):
