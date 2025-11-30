@@ -82,6 +82,9 @@ DATABASES = {
         'PASSWORD': 'Root@123',
         'HOST': 'localhost',
         'PORT': '3306',
+        'TEST': {
+            'NAME': 'api_test',  # this is the custom test database
+        },
     }
 }
 

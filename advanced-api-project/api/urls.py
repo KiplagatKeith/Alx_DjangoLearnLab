@@ -1,18 +1,18 @@
+# api/urls.py
+
 from django.urls import path
 from .views import (
     BookListView,
     BookDetailView,
     BookCreateView,
     BookUpdateView,
-    BookDeleteView
+    BookDeleteView,
 )
 
 urlpatterns = [
-    path('books/', BookListView.as_view(), name='book-list'),
-    path('books/<int:id>/', BookDetailView.as_view(), name='book-detail'),
-    path('books/create', BookCreateView.as_view(), name='book-create'),
-
-    # Checker expects these exact paths
-    path('books/update', BookUpdateView.as_view(), name='book-update'),
-    path('books/delete', BookDeleteView.as_view(), name='book-delete'),
+    path('books/', BookListView.as_view(), name='book-list'),               # GET list
+    path('books/create/', BookCreateView.as_view(), name='book-create'),    # POST create
+    path('books/<int:id>/', BookDetailView.as_view(), name='book-detail'),  # GET detail
+    path('books/<int:id>/update/', BookUpdateView.as_view(), name='book-update'),  # PUT/PATCH update
+    path('books/<int:id>/delete/', BookDeleteView.as_view(), name='book-delete'),  # DELETE
 ]

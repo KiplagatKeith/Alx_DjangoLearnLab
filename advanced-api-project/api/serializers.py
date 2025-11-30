@@ -8,8 +8,9 @@ class BookSerializer(serializers.ModelSerializer):
     - Represents the book's title, author (as string), and publication year.
     """
 
-    author = serializers.StringRelatedField()
-
+    #author = serializers.StringRelatedField()
+    author = serializers.PrimaryKeyRelatedField(read_only=True)
+    
     def validate_publication_year(self, value):
         if value > 2024:
             raise serializers.ValidationError("Publication year cannot be in the future.")
