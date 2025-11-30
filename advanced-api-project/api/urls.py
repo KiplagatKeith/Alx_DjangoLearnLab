@@ -10,7 +10,7 @@ from .views import (
 )
 
 urlpatterns = [
-    path('books/', BookListView.as_view(), name='book-list'),               # GET list
+    path('books/', BookListView.as_view(), name='book-list'),               # GET list + filtering/search
     path('books/create/', BookCreateView.as_view(), name='book-create'),    # POST create
     path('books/<int:id>/', BookDetailView.as_view(), name='book-detail'),  # GET detail
     path('books/<int:id>/update/', BookUpdateView.as_view(), name='book-update'),  # PUT/PATCH update
