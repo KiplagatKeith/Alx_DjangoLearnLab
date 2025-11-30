@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from rest_framework import generics
 from .serializers import BookSerializer, AuthorSerializer
-from .models import Book
+from .models import Book, Author
 from rest_framework import permissions
 from rest_framework import filters
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 class BookListView(generics.ListAPIView):
     """
     GET /api/books/
@@ -17,6 +18,7 @@ class BookListView(generics.ListAPIView):
     serializer_class = BookSerializer
     filter_backends = [filters.SearchFilter]  # add filter backends as needed
     search_fields = ['title', 'author']  # example search fields
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class BookDetailView(generics.RetrieveAPIView):
     """
@@ -29,6 +31,8 @@ class BookDetailView(generics.RetrieveAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     lookup_field = 'id'
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
 
 class BookUpdateView(generics.UpdateAPIView):
     """
@@ -43,7 +47,7 @@ class BookUpdateView(generics.UpdateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     lookup_field = 'id'
-    permission_classes = [permissions.IsAuthenticated]  # only logged-in users
+    permission_classes = [IsAuthenticated]  # only logged-in users
 
     def perform_update(self, serializer):
         if serializer.instance.author.user != self.request.user:
@@ -61,7 +65,7 @@ class BookDeleteView(generics.DestroyAPIView):
     
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]  # only logged-in users
+    permission_classes = [IsAuthenticated]  # only logged-in users
     lookup_field = 'id'
 
     def perform_destroy(self, instance):
@@ -80,7 +84,7 @@ class BookCreateView(generics.CreateAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]  # only logged-in users can create
+    permission_classes = [IsAuthenticated]  # only logged-in users can create
 
     def perform_create(self, serializer):
         # automatically set the author as the logged-in user
