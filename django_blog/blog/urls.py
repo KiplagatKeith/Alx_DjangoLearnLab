@@ -9,7 +9,7 @@ from .views import (
     PostCreateView,
     PostUpdateView,
     PostDeleteView,
-    add_comment,
+    CommentCreateView,
     CommentUpdateView,
     CommentDeleteView,
 )
@@ -31,8 +31,8 @@ urlpatterns = [
     path("posts/<int:pk>/edit/", PostUpdateView.as_view(), name="post_update"),
     path("posts/<int:pk>/delete/", PostDeleteView.as_view(), name="post_delete"),
 
-    # Comment URLs
-    path("posts/<int:post_id>/comments/new/", add_comment, name="add_comment"),
+    # Comment CRUD
+    path("posts/<int:post_id>/comments/new/", CommentCreateView.as_view(), name="comment_create"),
     path("comments/<int:pk>/edit/", CommentUpdateView.as_view(), name="comment_update"),
     path("comments/<int:pk>/delete/", CommentDeleteView.as_view(), name="comment_delete"),
 ]
