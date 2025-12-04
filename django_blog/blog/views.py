@@ -7,6 +7,7 @@ from .models import Post, UserProfile, Comment
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
+from django.db.models import Q
 
 # -----------------------------
 # User Authentication & Profile
@@ -145,3 +146,19 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return reverse_lazy("post_detail", kwargs={"pk": self.object.post.pk})
+
+# Search view
+def search_posts(request):
+    query = request.GET.get('q', '')  # Get search query from URL ?q=
+    results = Post.objects.none()  # default empty queryset
+
+    if query:
+        results = Post.objects.filter(
+            Q(title__icontains=query) | Q(content__icontains=query) | Q(tags__name__icontains=query)
+        ).distinct()
+
+    context = {
+        'query': query,
+        'results': results,
+    }
+    return render(request, 'blog/search_results.html', context)
