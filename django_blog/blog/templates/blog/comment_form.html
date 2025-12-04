@@ -1,0 +1,9 @@
+<h2>{% if form.instance.pk %}Edit Comment{% else %}Add Comment{% endif %}</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{% if form.instance.pk %}Update{% else %}Post{% endif %}</button>
+</form>
+
+<a href="{% if form.instance.pk %}{% url 'post_detail' form.instance.post.pk %}{% else %}{{ post.get_absolute_url }}{% endif %}">Cancel</a>
