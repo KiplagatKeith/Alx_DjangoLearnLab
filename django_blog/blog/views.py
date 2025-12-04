@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from .forms import RegisterForm, ProfileForm, UserProfileForm
+from django.contrib.auth.models import User
+from .models import Post
+from .models import UserProfile
 
 def register_view(request):
     if request.method == "POST":
@@ -18,7 +21,8 @@ def register_view(request):
 @login_required
 def profile_view(request):
     user = request.user
-    user_profile = user.userprofile
+    user_profile, created = UserProfile.objects.get_or_create(user=user)
+
 
     if request.method == "POST":
         user_form = ProfileForm(request.POST, instance=user)
@@ -36,3 +40,10 @@ def profile_view(request):
         "profile_form": profile_form,
     }
     return render(request, "profile.html", context)
+
+def home_view(request):
+    return render(request, "home.html")
+
+def posts_view(request):
+    posts = Post.objects.all().order_by('-published_date')
+    return render(request, "posts.html", {"posts": posts})
