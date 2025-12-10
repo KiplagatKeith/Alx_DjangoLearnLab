@@ -10,7 +10,7 @@ class AccountsSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'bio', 'profile_picture', 'followers']
 
 class RegisterSerializer(serializers.ModelSerializer):
-    # Explicit CharField for checker
+    # This must be exactly like this
     password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -18,14 +18,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password']
 
     def create(self, validated_data):
-        # Use get_user_model().objects.create_user exactly as checker wants
         user = get_user_model().objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password']
         )
-
-        # Create token for the user
         Token.objects.create(user=user)
-
         return user
