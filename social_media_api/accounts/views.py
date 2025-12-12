@@ -4,6 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.shortcuts import get_object_or_404
+from .models import CustomUser
 
 from .models import Accounts
 from .serializers import AccountsSerializer, RegisterSerializer
@@ -14,8 +15,7 @@ from .serializers import AccountsSerializer, RegisterSerializer
 # ----------------------
 class FollowUserView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = Accounts.objects.all()
-    serializer_class = AccountsSerializer
+    queryset = CustomUser.objects.all()
 
     def post(self, request, pk):
         user = request.user
@@ -30,8 +30,7 @@ class FollowUserView(generics.GenericAPIView):
 
 class UnfollowUserView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = Accounts.objects.all()
-    serializer_class = AccountsSerializer
+    queryset = CustomUser.objects.all()
 
     def post(self, request, pk):
         user = request.user
@@ -42,7 +41,6 @@ class UnfollowUserView(generics.GenericAPIView):
 
         user.following.remove(target)
         return Response({"message": f"You unfollowed {target.username}."}, status=status.HTTP_200_OK)
-
 
 # ----------------------
 # Accounts ViewSet (Profiles)
