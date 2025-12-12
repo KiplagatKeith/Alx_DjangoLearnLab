@@ -11,11 +11,14 @@ class AccountsSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     # This must be exactly like this
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField()
 
     class Meta:
         model = User
         fields = ['username', 'email', 'password']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
 
     def create(self, validated_data):
         user = get_user_model().objects.create_user(
