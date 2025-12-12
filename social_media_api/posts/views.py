@@ -1,7 +1,9 @@
 from rest_framework import viewsets, permissions, filters
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
-
+from rest_framework.pagination import PageNumberPagination
+from django.db.models import Q
+from rest_framework.response import Response
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.author == request.user
@@ -27,3 +29,14 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+class FeedViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    pagination_class = PageNumberPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        # Get posts from users the current user follows
+        return Post.objects.filter(author__in=user.following.all()).order_by('-created_at')

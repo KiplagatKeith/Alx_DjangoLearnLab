@@ -9,11 +9,9 @@ router.register(r'register', RegisterViewSet, basename='register')
 urlpatterns = [
     path('', include(router.urls)),
 
-    # ALX checker requires this exact literal text
     path('register/', RegisterViewSet.as_view({'post': 'create'}), name='register'),
 
     path('login/', CustomAuthToken.as_view(), name='login'),
 
-    # also required by the checker
     path('profile/', AccountsViewSet.as_view({'get': 'list'}), name='profile'),
 ]
