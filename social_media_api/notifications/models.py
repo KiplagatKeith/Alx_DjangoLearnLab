@@ -30,7 +30,7 @@ class Notification(models.Model):
                                                    blank=True)
     
     # What action was performed on the target object
-    target = models.GenericForeignKey('target_content_type', 
+    target = GenericForeignKey('target_content_type', 
                                       'target_object_id')
     
     # When the notification was created
