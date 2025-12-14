@@ -18,10 +18,10 @@ urlpatterns = [
     path('register/', RegisterViewSet.as_view({'post': 'create'}), name='register'),
     path('login/', CustomAuthToken.as_view(), name='login'),
 
-    # Follow / Unfollow endpoints
-    path('follow/<int:pk>/', FollowUserView.as_view(), name='follow-user'),
-    path('unfollow/<int:pk>/', UnfollowUserView.as_view(), name='unfollow-user'),
+    # Follow / Unfollow endpoints (ALX required format)
+    path('follow/<int:user_id>/', FollowUserView.as_view(), name='follow-user'),
+    path('unfollow/<int:user_id>/', UnfollowUserView.as_view(), name='unfollow-user'),
 
-    # Profile listing (all users)
+    # Profile listing
     path('profile/', AccountsViewSet.as_view({'get': 'list'}), name='profile'),
 ]
