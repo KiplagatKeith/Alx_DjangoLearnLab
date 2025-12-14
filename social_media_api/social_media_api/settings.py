@@ -1,10 +1,12 @@
 """
-Django settings for social_media_api project (Production-ready).
+Django settings for social_media_api project (Render-ready)
 """
 
 import os
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
+import dj_database_url
+from decouple import config
 
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,14 +15,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY SETTINGS
 # ---------------------------------------------------
 
-# SECRET_KEY should come from environment variable in production
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", get_random_secret_key())
+# SECRET_KEY from environment variable
+SECRET_KEY = config("DJANGO_SECRET_KEY", default=get_random_secret_key())
 
 # Disable debug in production
-DEBUG = False
+DEBUG = config("DEBUG", default=False, cast=bool)
 
-# Replace with your domain or server IP
-ALLOWED_HOSTS = ["sapis.com", "www.sapis.com", "192.168.1.100"]
+# Allowed hosts
+# Render automatically gives you a URL like your-app.onrender.com
+ALLOWED_HOSTS = [config("RENDER_EXTERNAL_URL", default="127.0.0.1")]
 
 # ---------------------------------------------------
 # INSTALLED APPS
@@ -63,17 +66,13 @@ ROOT_URLCONF = 'social_media_api.urls'
 WSGI_APPLICATION = 'social_media_api.wsgi.application'
 
 # ---------------------------------------------------
-# DATABASE
+# DATABASE (PostgreSQL on Render)
 # ---------------------------------------------------
 DATABASES = {
-    'default': {
-        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.mysql'),
-        'NAME': os.environ.get('DB_NAME', 'sm_api_db'),
-        'USER': os.environ.get('DB_USER', 'root'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'Root@123'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '3306'),
-    }
+    'default': dj_database_url.config(
+        default=config("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        conn_max_age=600
+    )
 }
 
 # ---------------------------------------------------
@@ -119,7 +118,7 @@ REST_FRAMEWORK = {
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
-SECURE_SSL_REDIRECT = True  # Set to True only if using HTTPS
+SECURE_SSL_REDIRECT = True  # Set True if using HTTPS
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
@@ -129,23 +128,5 @@ CSRF_COOKIE_SECURE = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ---------------------------------------------------
-# LOGGING (optional but recommended)
-# ---------------------------------------------------
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs/django_errors.log',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    },
-}
+# LOGGING
+# ----------------------
