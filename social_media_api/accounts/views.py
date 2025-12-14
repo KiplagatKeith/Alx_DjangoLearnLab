@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.shortcuts import get_object_or_404
-
+from .models import CustomUser
 from rest_framework import permissions
 from notifications.models import Notification
 
@@ -17,7 +17,7 @@ from .serializers import AccountsSerializer, RegisterSerializer
 # ----------------------
 class FollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = Accounts.objects.all()
+    queryset = CustomUser.objects.all()
 
     def post(self, request, pk):
         user = request.user
@@ -40,7 +40,7 @@ class FollowUserView(generics.GenericAPIView):
 
 class UnfollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = Accounts.objects.all()
+    queryset = CustomUser.objects.all()
 
     def post(self, request, pk):
         user = request.user
