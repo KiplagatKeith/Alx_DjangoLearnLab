@@ -91,23 +91,20 @@ class LikePostViewSet(viewsets.ViewSet):
     @action(detail=True, methods=['post'], url_path='unlike')
     def unlike(self, request, pk=None):
         user = request.user
-        try:
-            post = Post.objects.get(pk=pk)
-        except Post.DoesNotExist:
-            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
-
+        post = generics.get_object_or_404(Post, pk=pk)  # <-- change here
+    
         try:
             like = Like.objects.get(user=user, post=post)
             like.delete()
         except Like.DoesNotExist:
             return Response({"error": "You haven't liked this post"}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Optionally delete the notification
+    
+        # Delete the notification
         Notification.objects.filter(
             recipient=post.author,
             actor=user,
             verb="liked",
             target_object_id=post.id
         ).delete()
-
+    
         return Response({"success": "Post unliked"}, status=status.HTTP_200_OK)
