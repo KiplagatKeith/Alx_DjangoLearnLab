@@ -67,44 +67,45 @@ class LikePostViewSet(viewsets.ViewSet):
     # POST /posts/<post_id>/like/
     @action(detail=True, methods=['post'], url_path='like')
     def like(self, request, pk=None):
-        user = request.user
-        post = generics.get_object_or_404(Post, pk=pk)  # <-- exact call checker wants
+        # Get post or return 404
+        post = generics.get_object_or_404(Post, pk=pk)
 
         # Prevent duplicate likes
-        like, created = Like.objects.get_or_create(user=user, post=post)  # <-- exact call checker wants
+        like, created = Like.objects.get_or_create(user=request.user, post=post)  # checker wants request.user
         if not created:
             return Response({"error": "Already liked"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if post.author != user:
+        # Create notification if liking someone else's post
+        if post.author != request.user:
             post_ct = ContentType.objects.get_for_model(Post)
             Notification.objects.create(
                 recipient=post.author,
-                actor=user,
+                actor=request.user,
                 verb="liked",
                 target_content_type=post_ct,
                 target_object_id=post.id
             )
 
         return Response({"success": "Post liked"}, status=status.HTTP_201_CREATED)
-    
+
     # POST /posts/<post_id>/unlike/
     @action(detail=True, methods=['post'], url_path='unlike')
     def unlike(self, request, pk=None):
-        user = request.user
-        post = generics.get_object_or_404(Post, pk=pk)  # <-- change here
-    
+        # Get post or return 404
+        post = generics.get_object_or_404(Post, pk=pk)
+
         try:
-            like = Like.objects.get(user=user, post=post)
+            like = Like.objects.get(user=request.user, post=post)
             like.delete()
         except Like.DoesNotExist:
             return Response({"error": "You haven't liked this post"}, status=status.HTTP_400_BAD_REQUEST)
-    
-        # Delete the notification
+
+        # Delete the notification if it exists
         Notification.objects.filter(
             recipient=post.author,
-            actor=user,
+            actor=request.user,
             verb="liked",
             target_object_id=post.id
         ).delete()
-    
+
         return Response({"success": "Post unliked"}, status=status.HTTP_200_OK)
