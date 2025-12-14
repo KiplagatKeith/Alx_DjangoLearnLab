@@ -1,10 +1,9 @@
 from rest_framework.routers import DefaultRouter
-from .views import PostViewSet, CommentViewSet, FeedViewSet, LikePostViewSet
+from .views import PostViewSet, CommentViewSet, FeedViewSet
 
 router = DefaultRouter()
-router.register(r"posts", PostViewSet)
-router.register(r"comments", CommentViewSet)
-router.register(r"feed/", FeedViewSet, basename='feed')  
-router.register(r'like', LikePostViewSet, basename='like')
+router.register(r"posts", PostViewSet)        # /posts/, /posts/<pk>/, plus like/unlike actions
+router.register(r"comments", CommentViewSet)  # /comments/, /comments/<pk>/
+router.register(r"feed", FeedViewSet, basename='feed')  # /feed/
 
 urlpatterns = router.urls
